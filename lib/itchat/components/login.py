@@ -8,6 +8,8 @@ import xml.dom.minidom
 import random
 import traceback
 import logging
+from xml.etree import ElementTree
+
 try:
     from httplib import BadStatusLine
 except ImportError:
@@ -176,6 +178,11 @@ def process_login_info(core, loginContent):
                }
     r = core.s.get(core.loginInfo['url'],
                    headers=headers, allow_redirects=False)
+    resp_text = r.text
+    ret = ElementTree.fromstring(resp_text).find('ret').text
+    if ret != '0':
+        raise Exception(f"登录失败, {resp_text}")
+
     core.loginInfo['url'] = core.loginInfo['url'][:core.loginInfo['url'].rfind(
         '/')]
     for indexUrl, detailedUrl in (
@@ -332,6 +339,7 @@ def start_receiving(self, exitCallback=None, getReceivingFnOnly=False):
             exitCallback()
         else:
             logger.info('LOG OUT!')
+
     if getReceivingFnOnly:
         return maintain_loop
     else:

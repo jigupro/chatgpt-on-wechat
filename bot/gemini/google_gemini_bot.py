@@ -49,11 +49,12 @@ class GoogleGeminiBot(Bot):
                 HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_NONE,
                 HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
             }
-            
+
             # 生成回复，包含安全设置
             response = model.generate_content(
                 gemini_messages,
-                safety_settings=safety_settings
+                safety_settings=safety_settings,
+                request_options=genai.types.helper_types.RequestOptions(timeout=30)
             )
             if response.candidates and response.candidates[0].content:
                 reply_text = response.candidates[0].content.parts[0].text
@@ -69,7 +70,7 @@ class GoogleGeminiBot(Bot):
                 error_message = "No valid response generated due to safety constraints."
                 self.sessions.session_reply(error_message, session_id)
                 return Reply(ReplyType.ERROR, error_message)
-                    
+
         except Exception as e:
             logger.error(f"[Gemini] Error generating response: {str(e)}", exc_info=True)
             error_message = "Failed to invoke [Gemini] api!"
