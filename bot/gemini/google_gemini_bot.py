@@ -6,16 +6,16 @@ Google gemini bot
 """
 # encoding:utf-8
 
-from bot.bot import Bot
 import google.generativeai as genai
+from google.generativeai.types import HarmCategory, HarmBlockThreshold
+
+from bot.bot import Bot
+from bot.chatgpt.chat_gpt_session import ChatGPTSession
 from bot.session_manager import SessionManager
 from bridge.context import ContextType, Context
 from bridge.reply import Reply, ReplyType
 from common.log import logger
 from config import conf
-from bot.chatgpt.chat_gpt_session import ChatGPTSession
-from bot.baidu.baidu_wenxin_session import BaiduWenxinSession
-from google.generativeai.types import HarmCategory, HarmBlockThreshold
 
 
 # OpenAI对话模型API (可用)

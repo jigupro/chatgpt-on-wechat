@@ -2,6 +2,7 @@ from bot.bot_factory import create_bot
 from bridge.context import Context
 from bridge.reply import Reply
 from common import const
+from common.const import DEEPSEEK
 from common.log import logger
 from common.singleton import singleton
 from config import conf
@@ -54,6 +55,9 @@ class Bridge(object):
                 # 在Bridge类的__init__方法中添加
             if model_type and model_type.startswith("zhipu-agent"):
                 self.btype["chat"] = const.ZHIPU_AGENT
+
+            if model_type and model_type.startswith(DEEPSEEK):
+                self.btype["chat"] = const.DEEPSEEK_CHAT_MODEL
 
             if conf().get("use_linkai") and conf().get("linkai_api_key"):
                 self.btype["chat"] = const.LINKAI

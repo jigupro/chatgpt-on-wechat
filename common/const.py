@@ -13,6 +13,7 @@ QWEN_DASHSCOPE = "dashscope"  # 通义新版sdk和api key
 
 GEMINI = "gemini"  # gemini-1.0-pro
 ZHIPU_AI = "glm-4"
+ZHIPU_AGENT = "zhipu-agent"  # 智谱清流智能体
 MOONSHOT = "moonshot"
 MiniMax = "minimax"
 
@@ -84,18 +85,23 @@ CLAUDE_3_HAIKU = "claude-3-haiku-20240307"
 
 GITEE_AI_MODEL_LIST = ["Yi-34B-Chat", "InternVL2-8B", "deepseek-coder-33B-instruct", "InternVL2.5-26B", "Qwen2-VL-72B", "Qwen2.5-32B-Instruct", "glm-4-9b-chat", "codegeex4-all-9b", "Qwen2.5-Coder-32B-Instruct", "Qwen2.5-72B-Instruct", "Qwen2.5-7B-Instruct", "Qwen2-72B-Instruct", "Qwen2-7B-Instruct", "code-raccoon-v1", "Qwen2.5-14B-Instruct"]
 
+DEEPSEEK = "deepseek"
+DEEPSEEK_CHAT_MODEL = "deepseek-chat"
+
 MODEL_LIST = [
               GPT35, GPT35_0125, GPT35_1106, "gpt-3.5-turbo-16k",
               O1, O1_MINI, GPT_4o, GPT_4O_0806, GPT_4o_MINI, GPT4_TURBO, GPT4_TURBO_PREVIEW, GPT4_TURBO_01_25, GPT4_TURBO_11_06, GPT4, GPT4_32k, GPT4_06_13, GPT4_32k_06_13,
               WEN_XIN, WEN_XIN_4,
               XUNFEI,
               ZHIPU_AI, GLM_4, GLM_4_PLUS, GLM_4_flash, GLM_4_LONG, GLM_4_ALLTOOLS, GLM_4_0520, GLM_4_AIR, GLM_4_AIRX,
+              ZHIPU_AGENT,
               MOONSHOT, MiniMax,
               GEMINI, GEMINI_PRO, GEMINI_15_flash, GEMINI_15_PRO,GEMINI_20_flash_exp,
               CLAUDE_3_OPUS, CLAUDE_3_OPUS_0229, CLAUDE_35_SONNET, CLAUDE_35_SONNET_1022, CLAUDE_35_SONNET_0620, CLAUDE_3_SONNET, CLAUDE_3_HAIKU, "claude", "claude-3-haiku", "claude-3-sonnet", "claude-3-opus", "claude-3.5-sonnet",
               "moonshot-v1-8k", "moonshot-v1-32k", "moonshot-v1-128k",
               QWEN, QWEN_TURBO, QWEN_PLUS, QWEN_MAX,
-              LINKAI_35, LINKAI_4_TURBO, LINKAI_4o
+              LINKAI_35, LINKAI_4_TURBO, LINKAI_4o,
+              DEEPSEEK_CHAT_MODEL
             ]
 
 MODEL_LIST = MODEL_LIST + GITEE_AI_MODEL_LIST

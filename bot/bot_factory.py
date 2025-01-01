@@ -72,4 +72,8 @@ def create_bot(bot_type):
         from bot.zhipuagent.zhipu_agent_bot import ZhipuAgentBot
         return ZhipuAgentBot()
 
+    elif bot_type == const.DEEPSEEK_CHAT_MODEL:
+        from bot.deepseek.deepseek_bot import DeepseekChatBot
+        return DeepseekChatBot()
+
     raise RuntimeError

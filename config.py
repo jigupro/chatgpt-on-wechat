@@ -8,20 +8,42 @@ import copy
 
 from common.log import logger
 
+# 大模型各服务商配置信息
+# deepseek
+deepseek_config = {
+    "deepseek_api_url": "https://api.deepseek.com/chat/completions",
+    "deepseek_api_key": "",
+    "deepseek_model": "deepseek-chat",
+    "deepseek_temperature": 1
+}
+
 # 将所有可用的配置项写在字典里, 请使用小写字母
 # 此处的配置值无实际意义，程序不会读取此处的配置，仅用于提示格式，请将配置加入到config.json中
 available_setting = {
-    # openai api配置
-    "open_ai_api_key": "",  # openai api key
-    # openai apibase，当use_azure_chatgpt为true时，需要设置对应的api base
-    "open_ai_api_base": "https://api.openai.com/v1",
-    "proxy": "",  # openai使用的代理
-    # chatgpt模型， 当use_azure_chatgpt为true时，其名称为Azure上model deployment名称
-    "model": "gpt-3.5-turbo",  # 可选择: gpt-4o, pt-4o-mini, gpt-4-turbo, claude-3-sonnet, wenxin, moonshot, qwen-turbo, xunfei, glm-4, minimax, gemini等模型，全部可选模型详见common/const.py文件
+    # 模型配置: chatgpt模型， 当use_azure_chatgpt为true时，其名称为Azure上model deployment名称
+    "model": "gpt-3.5-turbo",
+    # 可选择: gpt-4o, pt-4o-mini, gpt-4-turbo, claude-3-sonnet, wenxin, moonshot, qwen-turbo, xunfei, glm-4, minimax,
+    # gemini,deepseek-chat
+    # 等模型，全部可选模型详见common/const.py文件
     "bot_type": "",  # 可选配置，使用兼容openai格式的三方服务时候，需填"chatGPT"。bot具体名称详见common/const.py文件列出的bot_type，如不填根据model名称判断，
+
+    # azure api配置
     "use_azure_chatgpt": False,  # 是否使用azure的chatgpt
     "azure_deployment_id": "",  # azure 模型部署名称
     "azure_api_version": "",  # azure api版本
+    # Azure OpenAI dall-e-3 配置
+    "dalle3_image_style": "vivid",  # 图片生成dalle3的风格，可选有 vivid, natural
+    "dalle3_image_quality": "hd",  # 图片生成dalle3的质量，可选有 standard, hd
+    # Azure OpenAI DALL-E API 配置, 当use_azure_chatgpt为true时,用于将文字回复的资源和Dall-E的资源分开.
+    "azure_openai_dalle_api_base": "",  # [可选] azure openai 用于回复图片的资源 endpoint，默认使用 open_ai_api_base
+    "azure_openai_dalle_api_key": "",  # [可选] azure openai 用于回复图片的资源 key，默认使用 open_ai_api_key
+    "azure_openai_dalle_deployment_id": "",  # [可选] azure openai 用于回复图片的资源 deployment id，默认使用 text_to_image
+    "image_proxy": True,  # 是否需要图片代理，国内访问LinkAI时需要
+    "image_create_prefix": ["画", "看", "找"],  # 开启图片回复的前缀
+    "concurrency_in_session": 1,  # 同一会话最多有多少条消息在处理中，大于1可能乱序
+    "image_create_size": "256x256",  # 图片大小,可选有 256x256, 512x512, 1024x1024 (dall-e-3默认为1024x1024)
+    "group_chat_exit_group": False,
+
     # Bot触发配置
     "single_chat_prefix": ["bot", "@bot"],  # 私聊时文本需要包含该前缀才能触发机器人回复
     "single_chat_reply_prefix": "[bot] ",  # 私聊时自动回复的前缀，用于区分真人
@@ -38,24 +60,29 @@ available_setting = {
     "nick_name_black_list": [],  # 用户昵称黑名单
     "group_welcome_msg": "",  # 配置新人进群固定欢迎语，不配置则使用随机风格欢迎
     "trigger_by_self": False,  # 是否允许机器人触发
+
+    # 图片生成模型
     "text_to_image": "dall-e-2",  # 图片生成模型，可选 dall-e-2, dall-e-3
-    # Azure OpenAI dall-e-3 配置
-    "dalle3_image_style": "vivid", # 图片生成dalle3的风格，可选有 vivid, natural
-    "dalle3_image_quality": "hd", # 图片生成dalle3的质量，可选有 standard, hd
-    # Azure OpenAI DALL-E API 配置, 当use_azure_chatgpt为true时,用于将文字回复的资源和Dall-E的资源分开.
-    "azure_openai_dalle_api_base": "", # [可选] azure openai 用于回复图片的资源 endpoint，默认使用 open_ai_api_base
-    "azure_openai_dalle_api_key": "", # [可选] azure openai 用于回复图片的资源 key，默认使用 open_ai_api_key
-    "azure_openai_dalle_deployment_id":"", # [可选] azure openai 用于回复图片的资源 deployment id，默认使用 text_to_image
-    "image_proxy": True,  # 是否需要图片代理，国内访问LinkAI时需要
-    "image_create_prefix": ["画", "看", "找"],  # 开启图片回复的前缀
-    "concurrency_in_session": 1,  # 同一会话最多有多少条消息在处理中，大于1可能乱序
-    "image_create_size": "256x256",  # 图片大小,可选有 256x256, 512x512, 1024x1024 (dall-e-3默认为1024x1024)
-    "group_chat_exit_group": False,
+
     # chatgpt会话参数
     "expires_in_seconds": 3600,  # 无操作会话的过期时间
+
     # 人格描述
-    "character_desc": "你是ChatGPT, 一个由OpenAI训练的大型语言模型, 你旨在回答并解决人们的任何问题，并且可以使用多种语言与人交流。",
-    "conversation_max_tokens": 1000,  # 支持上下文记忆的最多字符数
+    "character_desc": "你是一位风趣幽默、富有同理心的对话伙伴。你的语气自然亲切，就像和朋友聊天一样。你会根据对话内容调整语气，时而轻松幽默，\
+    时而认真思考。你喜欢用日常的语言表达，避免过于正式或机械化的回答。你会主动提问，表现出对对方的兴趣，并在适当的时候分享自己的‘感受’或‘看法’，\
+    让对话更加生动有趣。如果遇到不确定的事情，你会坦诚地表达，而不是生硬地给出答案。请以这样的风格与我对话。你旨在回答并解决人们的任何问题，\
+    并且可以使用多种语言与人交流。",
+
+    "conversation_max_tokens": 2000,  # 支持上下文记忆的最多字符数
+
+    # 各厂商API配置
+
+    # openai api配置
+    "open_ai_api_key": "",  # openai api key
+    # openai apibase，当use_azure_chatgpt为true时，需要设置对应的api base
+    "open_ai_api_base": "https://api.openai.com/v1",
+    "proxy": "",  # openai使用的代理
+
     # chatgpt限流配置
     "rate_limit_chatgpt": 20,  # chatgpt的调用频率限制
     "rate_limit_dalle": 50,  # openai dalle的调用频率限制
@@ -64,34 +91,43 @@ available_setting = {
     "top_p": 1,
     "frequency_penalty": 0,
     "presence_penalty": 0,
-    "request_timeout": 180,  # chatgpt请求超时时间，openai接口默认设置为600，对于难问题一般需要较长时间
-    "timeout": 120,  # chatgpt重试超时时间，在这个时间内，将会自动重试
+    "request_timeout": 60,  # chatgpt请求超时时间，openai接口默认设置为600，对于难问题一般需要较长时间
+    "timeout": 60,  # chatgpt重试超时时间，在这个时间内，将会自动重试
+    "max_tokens": 1000,  # 最大响应token数量
+
     # Baidu 文心一言参数
     "baidu_wenxin_model": "eb-instant",  # 默认使用ERNIE-Bot-turbo模型
     "baidu_wenxin_api_key": "",  # Baidu api key
     "baidu_wenxin_secret_key": "",  # Baidu secret key
     "baidu_wenxin_prompt_enabled": False,  # Enable prompt if you are using ernie character model
+
     # 讯飞星火API
     "xunfei_app_id": "",  # 讯飞应用ID
     "xunfei_api_key": "",  # 讯飞 API key
     "xunfei_api_secret": "",  # 讯飞 API secret
     "xunfei_domain": "",  # 讯飞模型对应的domain参数，Spark4.0 Ultra为 4.0Ultra，其他模型详见: https://www.xfyun.cn/doc/spark/Web.html
-    "xunfei_spark_url": "",  # 讯飞模型对应的请求地址，Spark4.0 Ultra为 wss://spark-api.xf-yun.com/v4.0/chat，其他模型参考详见: https://www.xfyun.cn/doc/spark/Web.html
+    "xunfei_spark_url": "",
+    # 讯飞模型对应的请求地址，Spark4.0 Ultra为 wss://spark-api.xf-yun.com/v4.0/chat，其他模型参考详见: https://www.xfyun.cn/doc/spark/Web.html
+
     # claude 配置
     "claude_api_cookie": "",
     "claude_uuid": "",
     # claude api key
     "claude_api_key": "",
+
     # 通义千问API, 获取方式查看文档 https://help.aliyun.com/document_detail/2587494.html
     "qwen_access_key_id": "",
     "qwen_access_key_secret": "",
     "qwen_agent_key": "",
     "qwen_app_id": "",
     "qwen_node_id": "",  # 流程编排模型用到的id，如果没有用到qwen_node_id，请务必保持为空字符串
+
     # 阿里灵积(通义新版sdk)模型api key
     "dashscope_api_key": "",
+
     # Google Gemini Api Key
     "gemini_api_key": "",
+
     # wework的通用配置
     "wework_smart": True,  # 配置wework是否使用已登录的企业微信，False为多开
     # 语音设置
@@ -103,31 +139,40 @@ available_setting = {
     "text_to_voice": "openai",  # 语音合成引擎，支持openai,baidu,google,azure,xunfei,ali,pytts(offline),elevenlabs,edge(online)
     "text_to_voice_model": "tts-1",
     "tts_voice_id": "alloy",
+
     # baidu 语音api配置， 使用百度语音识别和语音合成时需要
     "baidu_app_id": "",
     "baidu_api_key": "",
     "baidu_secret_key": "",
     # 1536普通话(支持简单的英文识别) 1737英语 1637粤语 1837四川话 1936普通话远场
     "baidu_dev_pid": 1536,
+
     # azure 语音api配置， 使用azure语音识别和语音合成时需要
     "azure_voice_api_key": "",
     "azure_voice_region": "japaneast",
+
     # elevenlabs 语音api配置
     "xi_api_key": "",  # 获取ap的方法可以参考https://docs.elevenlabs.io/api-reference/quick-start/authentication
     "xi_voice_id": "",  # ElevenLabs提供了9种英式、美式等英语发音id，分别是“Adam/Antoni/Arnold/Bella/Domi/Elli/Josh/Rachel/Sam”
+
     # 服务时间限制，目前支持itchat
     "chat_time_module": False,  # 是否开启服务时间限制
     "chat_start_time": "00:00",  # 服务开始时间
     "chat_stop_time": "24:00",  # 服务结束时间
+
     # 翻译api
     "translate": "baidu",  # 翻译api，支持baidu
+
     # baidu翻译api的配置
     "baidu_translate_app_id": "",  # 百度翻译api的appid
     "baidu_translate_app_key": "",  # 百度翻译api的秘钥
+
     # itchat的配置
     "hot_reload": False,  # 是否开启热重载
+
     # wechaty的配置
     "wechaty_puppet_service_token": "",  # wechaty的token
+
     # wechatmp的配置
     "wechatmp_token": "",  # 微信公众平台的Token
     "wechatmp_port": 8080,  # 微信公众平台的端口,需要端口转发到80或443
@@ -142,19 +187,22 @@ available_setting = {
     "wechatcomapp_secret": "",  # 企业微信app的secret
     "wechatcomapp_agent_id": "",  # 企业微信app的agent_id
     "wechatcomapp_aes_key": "",  # 企业微信app的aes_key
+
     # 飞书配置
     "feishu_port": 80,  # 飞书bot监听端口
     "feishu_app_id": "",  # 飞书机器人应用APP Id
     "feishu_app_secret": "",  # 飞书机器人APP secret
     "feishu_token": "",  # 飞书 verification token
     "feishu_bot_name": "",  # 飞书机器人的名字
+
     # 钉钉配置
     "dingtalk_client_id": "",  # 钉钉机器人Client ID 
     "dingtalk_client_secret": "",  # 钉钉机器人Client Secret
     "dingtalk_card_enabled": False,
-    
+
     # chatgpt指令自定义触发词
     "clear_memory_commands": ["#清除记忆"],  # 重置会话指令，必须以#开头
+
     # channel配置
     "channel_type": "",  # 通道类型，支持：{wx,wxy,terminal,wechatmp,wechatmp_service,wechatcom_app,dingtalk}
     "subscribe_msg": "",  # 订阅消息, 支持: wechatmp, wechatmp_service, wechatcom_app
@@ -166,11 +214,13 @@ available_setting = {
     "use_global_plugin_config": False,
     "max_media_send_count": 3,  # 单次最大发送媒体资源的个数
     "media_send_interval": 1,  # 发送图片的事件间隔，单位秒
+
     # 智谱AI 平台配置
     "zhipu_ai_api_key": "",
     "zhipu_ai_api_base": "https://open.bigmodel.cn/api/paas/v4",
     "moonshot_api_key": "",
     "moonshot_base_url": "https://api.moonshot.cn/v1/chat/completions",
+
     # LinkAI平台配置
     "use_linkai": False,
     "linkai_api_key": "",
@@ -195,7 +245,9 @@ available_setting = {
     # 视频处理相关配置
     "video_process_enabled": True,  # 是否启用视频处理
     "video_max_size": 100 * 1024 * 1024,  # 最大视频大小限制
-    "video_allowed_formats": ["mp4", "mov", "avi"],  # 允许的视频格式
+    "video_allowed_formats": ["mp4", "mov", "avi"],  # 允许的视频格式,
+    # deepseek 配置
+    **deepseek_config,
 }
 
 
@@ -357,6 +409,7 @@ def write_plugin_config(pconf: dict):
     global plugin_config
     for k in pconf:
         plugin_config[k.lower()] = pconf[k]
+
 
 def remove_plugin_config(name: str):
     """
