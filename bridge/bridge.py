@@ -51,6 +51,9 @@ class Bridge(object):
 
             if model_type in ["abab6.5-chat"]:
                 self.btype["chat"] = const.MiniMax
+                # 在Bridge类的__init__方法中添加
+            if model_type and model_type.startswith("zhipu-agent"):
+                self.btype["chat"] = const.ZHIPU_AGENT
 
             if conf().get("use_linkai") and conf().get("linkai_api_key"):
                 self.btype["chat"] = const.LINKAI

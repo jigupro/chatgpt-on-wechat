@@ -68,5 +68,8 @@ def create_bot(bot_type):
         from bot.minimax.minimax_bot import MinimaxBot
         return MinimaxBot()
 
+    elif bot_type == const.ZHIPU_AGENT:
+        from bot.zhipuagent.zhipu_agent_bot import ZhipuAgentBot
+        return ZhipuAgentBot()
 
     raise RuntimeError

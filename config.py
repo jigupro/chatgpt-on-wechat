@@ -180,6 +180,22 @@ available_setting = {
     "Minimax_group_id": "",
     "Minimax_base_url": "",
     "web_port": 9899,
+
+    # 智谱清流智能体配置
+    "zhipu_agent_app_id": "",  # 智谱清流智能体应用ID
+    "video": {
+        "type": dict,
+        "default": {
+            "enabled": True,
+            "save_path": "tmp",
+            "max_size": 30,  # MB
+            "allowed_formats": ["mp4", "mov", "avi"]
+        }
+    },
+    # 视频处理相关配置
+    "video_process_enabled": True,  # 是否启用视频处理
+    "video_max_size": 100 * 1024 * 1024,  # 最大视频大小限制
+    "video_allowed_formats": ["mp4", "mov", "avi"],  # 允许的视频格式
 }
 
 
