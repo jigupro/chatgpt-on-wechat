@@ -17,6 +17,15 @@ deepseek_config = {
     "deepseek_temperature": 1
 }
 
+# 智谱AI配置
+zhipu_config = {
+    "zhipu_ai_api_key": "",
+    "zhipu_ai_api_base": "https://open.bigmodel.cn/api/paas/v4",
+    "zhipu_ai_api_tools": "https://open.bigmodel.cn/api/paas/v4/tools",
+    "zhipu_ai_tools_web_search": "web-search-pro",
+    "zhipu_agent_app_id": ""
+}
+
 # 将所有可用的配置项写在字典里, 请使用小写字母
 # 此处的配置值无实际意义，程序不会读取此处的配置，仅用于提示格式，请将配置加入到config.json中
 available_setting = {
@@ -248,6 +257,8 @@ available_setting = {
     "video_allowed_formats": ["mp4", "mov", "avi"],  # 允许的视频格式,
     # deepseek 配置
     **deepseek_config,
+    # 智谱AI 配置
+    **zhipu_config,
 }
 
 
