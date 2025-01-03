@@ -4,8 +4,10 @@
 import logging
 import uuid
 from typing import Tuple
-
+from pathlib import Path
+import json
 import requests
+from zhipuai import ZhipuAI
 
 import config
 from common.singleton import singleton
@@ -30,8 +32,8 @@ class SearchResultItem(dict):
 
 @singleton
 class ZhipuTools:
-    @staticmethod
-    def web_search(content) -> Tuple[SearchResultItem]:
+    @classmethod
+    def web_search(cls, content) -> Tuple[SearchResultItem, ...]:
         """
         从智谱AI的响应中获取答案
         Args:
@@ -73,7 +75,23 @@ class ZhipuTools:
             return tuple(SearchResultItem(**result) for result in search_result_list[0])
 
 
-zhipu_tools = ZhipuTools()
+    @classmethod
+    def file_extract(cls, file_path) -> str:
+        """
+        从智谱AI的响应中获取答案
+        Args:
+            file_path: 文件路径
+        Returns: 查询结果
+        """
+        conf = config.conf()
+        api_key = conf.get("zhipu_ai_api_key", config.zhipu_config.get("zhipu_ai_api_key"))
+        client = ZhipuAI(api_key=api_key)
+        # 格式限制：.PDF .DOCX .DOC .XLS .XLSX .PPT .PPTX .PNG .JPG .JPEG .CSV .PY .TXT .MD .BMP .GIF
+        # 大小：单个文件50M、总数限制为100个文件
+        file_object = client.files.create(file=Path(file_path), purpose="file-extract")
+        # 获取文本内容
+        file_content = json.loads(client.files.content(file_id=file_object.id).content)["content"]
+        return file_content
 
-if __name__ == '__main__':
-    print(zhipu_tools.web_search("中国队奥运会拿了多少奖牌"))
+
+zhipu_tools = ZhipuTools()
